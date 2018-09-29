@@ -8,11 +8,18 @@ Created on Tue Sep  4 19:13:51 2018
 import random 
 
 class MySorter():
-    def __init__(self,n1,n2):
+    def __init__(self,n1,n2,A=[]):
         n1=n1
         n2=n2
-        self.A=[random.randint(0,n1) for i in range(0,n2)]
-        
+        if A==[]:
+            self.A=[random.randint(0,n1) for i in range(0,n2)]
+        else:
+            self.A=A
+    def SortChecker(self,A,sorter=""):
+        if A!=sorted(self.A):
+            print(sorter, "failed")
+        else:
+            print(sorter, " ok ")    
 #insertion sort
     def InsertionSort(self):
         A=self.A.copy()
@@ -24,7 +31,11 @@ class MySorter():
                 A[i+1]=A[i]
                 i=i-1
             A[i+1]=key
+        self.SortChecker(A, "Insertion Sort")
         return A
+        
+        
+
 #non increasing insertion sort
     def NonIncreasingIS(self):
         A=self.A.copy()
@@ -36,6 +47,7 @@ class MySorter():
                 i-=1
             A[i+1]=key
         return A
+        
 #mergesort
     def MergeSort(self,check_boolean=True):
         def Merge(A,p,q,r):
@@ -69,20 +81,81 @@ class MySorter():
                 MS(A,q+1,r)
                 Merge(A,p,q,r)
         
-        
         A=self.A.copy()
-        print(A)
         MS(A,0,len(A)-1)
-        print(A)
-        if A!=sorted(self.A) and check_boolean:
-            print("the universe made MergeSort fail :(")
-        return A
-    
+        self.SortChecker(A, "Merge Sort")
+    def QuickSort(self):
+        def Partition(A,l,r):
+            pivot=A[r]
+            i=l-1
+            for j in range(l,r):
+                if A[j]<=pivot:
+                    i+=1
+                    A[i],A[j]=A[j],A[i]
+            A[i+1],A[r]=A[r],A[i+1]
+            return i+1
         
-            
-x=MySorter(10,20)
+        def QS(A,l,r):
+            if l<r:
+                q=Partition(A,l,r)
+                QS(A,l,q-1)
+                QS(A,q+1,r)
+        A=self.A.copy()
+        l=0
+        r=len(A)-1
+        QS(A,l,r)
+        self.SortChecker(A, "Quick Sort")
+    def QuickSort2(self): # 3 way, randomized QS
+        def Partition(A,l,r):
+            import random
+            x=random.randint(l,r) 
+            A[r],A[x]=A[x],A[r]
+            pivot=A[r]
+            i=l-1
+            k=0# no of items equal to pivot 
+            j=l
+            while j<r-k:
+                if A[j]==pivot:
+                    k+=1
+                    A[j],A[r-k]=A[r-k],A[j]
 
+                if A[j]<pivot:
+                    i+=1
+                    A[i],A[j]=A[j],A[i]
+                j+=1
+            for x in range(0,k+1):
+                A[i+1+x],A[r-x]=A[r-x],A[i+1+x]
+            return i+1,k
+
+        def QS(A,l,r):
+            if l<r:
+                q,k=Partition(A,l,r)
+                QS(A,l,q-1)
+                QS(A,q+1+k,r)
+        A=self.A.copy()
+        l=0
+        r=len(A)-1
+        QS(A,l,r)
+        self.SortChecker(A,"Quicksort2")
+
+import time            
+x=MySorter(3,1000)
+
+t1=time.time()
+x.QuickSort2()
+print(time.time()-t1)
+
+t1=time.time()
+x.QuickSort()
+print(time.time()-t1)
+
+t1=time.time()
 x.MergeSort()
+print(time.time()-t1)
+
+t1=time.time()
+x.InsertionSort()
+print(time.time()-t1)
 
 
 
